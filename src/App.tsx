@@ -41,7 +41,17 @@ const TodosList = observer(() => (
     {useStore()
       .todos.todos()
       .map((x, i) => (
-        <Todo key={x.id} todo={x} index={i} />
+        <Draggable key={x.id} draggableId={x.id} index={i}>
+          {(provided) => (
+            <div
+              ref={provided.innerRef}
+              {...provided.draggableProps}
+              {...provided.dragHandleProps}
+            >
+              <Todo key={x.id} todo={x} index={i} />
+            </div>
+          )}
+        </Draggable>
       ))}
   </>
 ));
@@ -69,34 +79,24 @@ const Todo = observer(({ todo, index }: { todo: t.Todo; index: number }) => {
   const { id, isCompleted, toggle } = todo;
 
   return (
-    <Draggable draggableId={id} index={index}>
-      {(provided) => (
-        <div
-          ref={provided.innerRef}
-          {...provided.draggableProps}
-          {...provided.dragHandleProps}
-        >
-          <div
-            style={{
-              textDecoration: isCompleted() ? "line-through" : "none",
-              color: isCompleted() ? "lightgray" : "inherit",
-            }}
-          >
-            <input
-              type="checkbox"
-              checked={isCompleted()}
-              onChange={() => toggle()}
-            />
+    <div
+      style={{
+        textDecoration: isCompleted() ? "line-through" : "none",
+        color: isCompleted() ? "lightgray" : "inherit",
+      }}
+    >
+      <input
+        type="checkbox"
+        checked={isCompleted()}
+        onChange={() => toggle()}
+      />
 
-            <TodoEditor todo={todo} />
+      <TodoEditor todo={todo} />
 
-            <button onClick={() => remove(id)} style={{ marginLeft: "1em" }}>
-              x
-            </button>
-          </div>
-        </div>
-      )}
-    </Draggable>
+      <button onClick={() => remove(id)} style={{ marginLeft: "1em" }}>
+        x
+      </button>
+    </div>
   );
 });
 
